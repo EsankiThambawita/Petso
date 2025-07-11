@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <Image source={require("../../assets/pets.jpg")} style={styles.logo} />
+        <Image source={require("../../assets/login.jpg")} style={styles.logo} />
         <Text style={styles.title}>Welcome Back!</Text>
         <TextInput
           placeholder="Email"
