@@ -26,12 +26,22 @@ export default function App() {
         <Stack.Screen
           name="Dashboard"
           component={DashboardScreen}
-          options={{ headerLeft: null, title: "Your Pets" }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddPet"
           component={AddPetScreen}
-          options={{ title: "Add New Pet" }}
+          options={{
+            headerShown: true,
+            headerTitle: "",
+            headerBackTitleVisible: false,
+            headerTintColor: "#bb86fc",
+            headerStyle: {
+              backgroundColor: "#1B1464",
+              elevation: 0,
+              shadowOpacity: 0,
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

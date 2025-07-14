@@ -6,25 +6,30 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
-  View,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import styles from "./LoginScreenStyles";
+
+import { auth } from "../../firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    alert(`Logging in with\nEmail: ${email}\nPassword: ${password}`);
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        navigation.replace("Dashboard");
+      })
+      .catch((error) => {
+        Alert.alert("Login Failed", error.message);
+      });
   };
 
   return (
-    <LinearGradient
-      colors={["#4B0082", "#00008B"]} // Indigo purple to dark blue
-      style={styles.gradient}
-    >
+    <LinearGradient colors={["#4B0082", "#00008B"]} style={styles.gradient}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
