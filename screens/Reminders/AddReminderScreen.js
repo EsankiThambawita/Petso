@@ -10,6 +10,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import * as Notifications from "expo-notifications";
 
 const tasks = ["Vaccinations", "Grooming", "Worming"];
 

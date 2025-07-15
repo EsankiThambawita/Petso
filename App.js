@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import { useEffect } from "react";
+import { Platform, Alert } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import * as Notifications from "expo-notifications";
 
 import LoginScreen from "./screens/Login/LoginScreen";
 import RegisterScreen from "./screens/Register/RegisterScreen";
@@ -14,7 +14,7 @@ import AddReminderScreen from "./screens/Reminders/AddReminderScreen";
 
 const Stack = createNativeStackNavigator();
 
-// Configure notification handler
+// Configure notification handler to show alerts while app is foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -24,15 +24,27 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  // ✅ useEffect now inside the App function
   useEffect(() => {
-    const registerForPush = async () => {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== "granted") {
-        await Notifications.requestPermissionsAsync();
+    // Request permissions on mount
+    const registerForPushNotifications = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } =
+          await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== "granted") {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== "granted") {
+          Alert.alert("Failed to get push token for push notification!");
+          return;
+        }
+      } else {
+        Alert.alert("Must use physical device for Push Notifications");
       }
     };
-    registerForPush();
+
+    registerForPushNotifications();
   }, []);
 
   return (
