@@ -4,53 +4,51 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
   StyleSheet,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import { auth, db } from "../../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function AddPetScreen({ navigation }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("Dog");
-  const [imageUri, setImageUri] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
-  // Request permission & pick image from gallery
-  const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission to access media library is required!");
-      return;
-    }
-
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!pickerResult.cancelled) {
-      setImageUri(pickerResult.uri);
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) {
       alert("Please enter your pet's name");
       return;
     }
-    if (!imageUri) {
-      alert("Please add a picture of your pet");
-      return;
+
+    setUploading(true);
+
+    try {
+      const user = auth.currentUser;
+
+      await addDoc(collection(db, "pets"), {
+        name,
+        type,
+        ownerId: user.uid,
+        createdAt: new Date(),
+      });
+
+      setUploading(false);
+      Alert.alert("Success", `${type} named ${name} added!`, [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
+      Alert.alert("Failed to add pet", error.message);
     }
-    // Save pet info logic here (e.g. upload to firestore)
-    alert(`Added ${type} named ${name}!`);
-    navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Your Pet 🐾</Text>
+      <Text style={styles.title}>Add Your Pet</Text>
 
       <TextInput
         placeholder="Pet's Name"
@@ -83,16 +81,16 @@ export default function AddPetScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.petImage} />
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={handleSubmit}
+        disabled={uploading}
+      >
+        {uploading ? (
+          <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.imagePickerText}>Tap to add a picture</Text>
+          <Text style={styles.submitButtonText}>Add Pet</Text>
         )}
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Add Pet</Text>
       </TouchableOpacity>
     </View>
   );
@@ -101,7 +99,7 @@ export default function AddPetScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2a1257", // dark purple background
+    backgroundColor: "#2a1257",
     padding: 20,
     justifyContent: "center",
   },
@@ -145,27 +143,8 @@ const styles = StyleSheet.create({
     color: "#2a1257",
     fontWeight: "bold",
   },
-  imagePicker: {
-    height: 200,
-    borderRadius: 20,
-    borderColor: "#bb86fc",
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 40,
-  },
-  imagePickerText: {
-    color: "#bb86fc",
-    fontSize: 16,
-    fontStyle: "italic",
-  },
-  petImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 20,
-  },
   submitButton: {
-    backgroundColor: "rgba(187, 134, 252, 0.8)", // translucent purple
+    backgroundColor: "rgba(187, 134, 252, 0.8)",
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: "center",
