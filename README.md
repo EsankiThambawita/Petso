@@ -1,6 +1,6 @@
-# Petso – Smart Pet Care Tracker
+# Petso – React Native Pet Reminder App
 
-Petso is a user-friendly mobile application built with React Native and Expo, designed to help pet owners manage and care for their pets efficiently.
+Petso is a user-friendly mobile application built with React Native and Expo, designed to help pet owners manage multiple pet profiles and save dates for grooming, vaccinations, and worming.
 
 > This project is actively under development as a practical way to learn React Native, React, and mobile app development.
 
@@ -10,15 +10,13 @@ Petso is a user-friendly mobile application built with React Native and Expo, de
 
 - User Authentication  
   - Email/password registration and login using Firebase Authentication  
-  - Google sign-in (planned)
 
 - Pet Profiles  
-  - Add multiple pets (dogs, cats, etc.)  
-  - Upload pet pictures  
+  - Add multiple pets (dog or cat)   
   - View all pets on a well-designed dashboard
 
 - Smart Reminders  
-  - Set and manage reminders for grooming, vaccinations, worming, and tick/flea prevention
+  - Save dates for grooming, vaccinations, worming, and tick/flea prevention
 
 - State Management  
   - Manage app state using React hooks and context (planned)
